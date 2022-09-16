@@ -13,10 +13,7 @@ function kmlFixtureEqual(t, file) {
         var output = tj.kml(toDOM(fs.readFileSync(file)));
         fs.writeFileSync(file + '.geojson', JSON.stringify(output, null, 4));
     }
-    t.equal(
-        JSON.stringify(tj.kml(toDOM(fs.readFileSync(file))), null, 4),
-        fs.readFileSync(file + '.geojson', 'utf8'),
-        file);
+    t.equal(JSON.stringify(tj.kml(toDOM(fs.readFileSync(file))), null, 4), fs.readFileSync(file + '.geojson', 'utf8'), file);
 }
 
 function gpxFixtureEqual(t, file) {
@@ -25,21 +22,18 @@ function gpxFixtureEqual(t, file) {
         fs.writeFileSync(file + '.geojson', JSON.stringify(output, null, 4));
     }
 
-    t.deepEqual(
-        tj.gpx(toDOM(fs.readFileSync(file, 'utf8'))),
-        JSON.parse(fs.readFileSync(file + '.geojson', 'utf8')),
-        file);
+    t.deepEqual(tj.gpx(toDOM(fs.readFileSync(file, 'utf8'))), JSON.parse(fs.readFileSync(file + '.geojson', 'utf8')), file);
 }
 
-test('KML', function(t) {
-    glob.sync('test/data/*.kml').forEach(function(file) {
+test('KML', function (t) {
+    glob.sync('test/data/*.kml').forEach(function (file) {
         kmlFixtureEqual(t, file);
     });
     t.end();
 });
 
-test('GPX', function(t) {
-    glob.sync('test/data/*.gpx').forEach(function(file) {
+test('GPX', function (t) {
+    glob.sync('test/data/*.gpx').forEach(function (file) {
         gpxFixtureEqual(t, file);
     });
     t.end();
@@ -47,8 +41,8 @@ test('GPX', function(t) {
 
 function toDOM(_) {
     if (typeof DOMParser === 'undefined') {
-        return (new xmldom.DOMParser()).parseFromString(_.toString());
+        return new xmldom.DOMParser().parseFromString(_.toString());
     } else {
-        return (new DOMParser()).parseFromString(_, 'text/xml');
+        return new DOMParser().parseFromString(_, 'text/xml');
     }
 }
