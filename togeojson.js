@@ -323,15 +323,8 @@ var toGeoJSON = (function () {
                     if (outline) properties['stroke-opacity'] = outline === '1' ? properties['stroke-opacity'] || 1 : 0;
                 }
                 if (extendedData) {
-                    var datas = get(extendedData, 'Data'),
-                        simpleDatas = get(extendedData, 'SimpleData');
-
-                    for (i = 0; i < datas.length; i++) {
-                        properties[datas[i].getAttribute('name')] = nodeVal(get1(datas[i], 'value'));
-                    }
-                    for (i = 0; i < simpleDatas.length; i++) {
-                        properties[simpleDatas[i].getAttribute('name')] = nodeVal(simpleDatas[i]);
-                    }
+                    setGeojsonProperties(properties, extendedData, 'Data');
+                    setGeojsonProperties(properties, extendedData, 'SimpleData');
                 }
                 if (visibility) {
                     properties.visibility = nodeVal(visibility);
@@ -353,6 +346,31 @@ var toGeoJSON = (function () {
                 if (attr(root, 'id')) feature.id = attr(root, 'id');
                 return [feature];
             }
+
+            function setGeojsonProperties(properties, extendedData, extendedDataName) {
+                var datas = get(extendedData, extendedDataName);
+                for (let i = 0; i < datas.length; i++) {
+                    var dataName = datas[i].getAttribute('name');
+                    var dataValue = nodeVal(get1(datas[i], 'value'));
+                    var newPropName = getPropName(dataName, properties);
+                    properties[newPropName] = dataValue;
+                }
+            }
+
+            function getPropName(dataName, properties) {
+                let propName = dataName;
+                let found = true;
+                let i = 0;
+                while (found) {
+                    found = properties.hasOwnProperty(propName);
+                    if (found) {
+                        i++;
+                        propName = dataName + '_' + i;
+                    }
+                }
+                return propName;
+            }
+
             return gj;
         },
         gpx: function (doc) {
